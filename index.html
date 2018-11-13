@@ -6,24 +6,39 @@
     <title>Clock Slider</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        @import url('https://fonts.googleapis.com/css?family=Orbitron');
+
+        .wrap {
+
+        }
+
         #clockFace {
             border: solid 1px black;
+        }
+
+        #digitalClock {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 60px;
         }
     </style>
 </head>
 
 <body>
-    <canvas id="clockFace" width="400" height="400"></canvas>
-    <input type="range" min="0" max="3600" value="0" id="sliderTime">
+    <div class="wrap">
+        <canvas id="clockFace" width="400" height="400"></canvas>
+        <div>
+            <input type="range" min="0" max="3600" value="0" id="sliderTime" style="width: 380px;">
+        </div>
+        <div style="display: inline; margin: 0 auto">
+            <span id="digitalClock">12:00:00</span>
+        </div>
+    </div>
 
     <script>
         let inputTime = document.getElementById('sliderTime');
-        // console.log(inputTime.value)
 
         //Followed MDN Canvas Animation Tutorial to create clock
         function clock() {
-            // console.log(inputTime.value)
-            // var now = new Date();
             let canvas = document.getElementById('clockFace');
             var ctx = canvas.getContext('2d');
             let x = canvas.width / 2;
@@ -31,10 +46,9 @@
             ctx.save();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.translate(x, y);
-            // ctx.scale(0.4, 0.4);
             ctx.rotate(-Math.PI / 2);
             ctx.strokeStyle = 'black';
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = "white";
             ctx.lineWidth = 8;
             ctx.lineCap = 'round';
 
@@ -63,19 +77,13 @@
             }
             ctx.restore();
 
-            // let dateTest = new Date();
-            // console.log(dateTest.getHours());
-            // console.log(dateTest.getMinutes());
-            // console.log(dateTest.getSeconds());
-
-            var sec = inputTime.value % 60;
-            var min = inputTime.value % 60;
-            var hr = parseInt(inputTime.value / 60);
-            console.log(inputTime.value);
-            // console.log(hr);
-            // hr = hr >= 12 ? hr - 12 : hr;
-
+            let dummyTime = new Date(0, 0, 0, 0, 0, 0);
+            dummyTime.setSeconds(inputTime.value);
+            var sec = dummyTime.getSeconds();
+            var min = dummyTime.getMinutes();
+            var hr = dummyTime.getHours();
             ctx.fillStyle = 'black';
+            updateDigitalClock(hr, min, sec);
 
             // write Hours
             ctx.save();
@@ -98,133 +106,39 @@
             ctx.restore();
 
             // Write seconds
-            // ctx.save();
-            // ctx.rotate(sec * Math.PI / 30);
-            // ctx.strokeStyle = '#D40000';
-            // ctx.fillStyle = '#D40000';
-            // ctx.lineWidth = 6;
-            // ctx.beginPath();
-            // ctx.moveTo(-30, 0);
-            // ctx.lineTo(160, 0);
-            // ctx.stroke();
-            // ctx.beginPath();
-            // ctx.arc(0, 0, 10, 0, Math.PI * 2, true);
-            // ctx.fill();
-            // ctx.beginPath();
-            // ctx.arc(95, 0, 10, 0, Math.PI * 2, true);
-            // ctx.stroke();
-            // ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-            // ctx.arc(0, 0, 3, 0, Math.PI * 2, true);
-            // ctx.fill();
-            // ctx.restore();
-
-            //     ctx.beginPath();
-            //     ctx.lineWidth = 14;
-            //     ctx.strokeStyle = '#325FA2';
-            //     ctx.arc(0, 0, 142, 0, Math.PI * 2, true);
-            //     ctx.stroke();
+            ctx.save();
+            ctx.rotate(sec * Math.PI / 30);
+            ctx.strokeStyle = '#D40000';
+            ctx.fillStyle = '#D40000';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(-30, 0);
+            ctx.lineTo(160, 0);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+            ctx.arc(0, 0, 3, 0, Math.PI * 2, true);
+            ctx.fill();
+            ctx.restore();
 
             ctx.restore();
 
             window.requestAnimationFrame(clock);
         }
 
+        function updateDigitalClock(h, m, s) {
+            let dClock = document.getElementById('digitalClock');
+            h += 12;
+            if (h === 13)
+                h = 1;
+            dClock.innerHTML = (h < 10 ? ("0" + h) : h) + ":" +
+                (m < 10 ? ("0" + m) : m) + ":" +
+                (s < 10 ? ("0" + s) : s);
+        }
         window.requestAnimationFrame(clock);
     </script>
-
-    //
-    <!-- <script>
-        // let canvas, ctx, x, y, diameter;
-
-        // function initClock() {
-        //     canvas = document.getElementById('clockFace');
-        //     ctx = canvas.getContext('2d');
-        //     diameter = 300;
-        //     x = canvas.width / 2;
-        //     y = canvas.height / 2;
-
-        //     updateClock();
-        //     window.setInterval(updateClock, 1000);
-        // }
-
-        // function updateClock() {
-        //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-        //     drawClockFace();
-
-        //     let hours = 12;
-        //     ctx.strokeStyle = "black";
-        //     ctx.lineWidth = 2;
-        //     drawHand(diameter / 3, hours * 30);
-
-        //     let minutes = 12;
-        //     ctx.strokeStyle = "black";
-        //     ctx.lineWidth = 2;
-        //     drawHand(diameter / 2, minutes * 6);
-
-
-        // }
-
-        // function drawClockFace() {
-        //     ctx.beginPath();
-        //     ctx.arc(x, y, diameter / 2, 0, 2 * Math.PI, false);
-        //     ctx.strokeStyle = "black";
-        //     ctx.lineWidth = 2;
-        //     ctx.stroke();
-        //     ctx.closePath();
-
-        //     ctx.beginPath();
-        //     ctx.arc(x, y, 5, 0, 2 * Math.PI, false);
-        //     ctx.stroke = "black";
-        //     ctx.fill();
-        //     ctx.closePath();
-
-        //     drawHour();
-        // }
-
-        // function drawHour() {
-        //     let hours = 12;
-        //     ctx.strokeStyle = "black";
-        //     ctx.lineWidth = 2;
-
-        //     while (hours > 0) {
-        //         ctx.save();
-        //         ctx.beginPath();
-        //         ctx.translate(x, y);
-        //         let angle = (hours * 30) * Math.PI / 180;
-        //         ctx.rotate(angle);
-        //         ctx.translate(0, -diameter / 2);
-
-        //         ctx.save();
-        //         ctx.translate(0, -10);
-        //         ctx.rotate(-angle);
-
-        //         ctx.fillText(hours, -3, 0);
-        //         ctx.restore();
-
-        //         ctx.moveTo(0, 0);
-        //         ctx.lineTo(0, 10);
-        //         ctx.stroke();
-        //         ctx.closePath();
-        //         ctx.restore();
-
-        //         hours--;
-        //     }
-
-        //     function drawHand(length, angle) {
-        //         ctx.save();
-        //         ctx.beginPath();
-        //         ctx.translate(x, y);
-        //         ctx.rotate(-180 * Math.PI / 180);
-        //         ctx.rotate(angle * Math.PI / 180);
-        //         ctx.moveTo(0, 0);
-        //         ctx.lineTo(0, length);
-        //         ctx.closePath();
-        //         ctx.restore();
-        //     }
-        // }
-
-        // initClock();
-    // </script> -->
 </body>
 
 </html>
